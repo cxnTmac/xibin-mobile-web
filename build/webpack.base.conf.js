@@ -6,14 +6,15 @@ const vuxLoader = require('vux-loader')
 
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
-
+require('babel-polyfill')
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
 let webpackConfig = {
   entry: {
-    app: './src/main.js'
+    app: ['babel-polyfill','./src/main.js'],
+
   },
   output: {
     path: config.build.assetsRoot,
@@ -31,15 +32,15 @@ let webpackConfig = {
   },
   module: {
     rules: [
-      {
-        test: /\.(js|vue)$/,
-        loader: 'eslint-loader',
-        enforce: 'pre',
-        include: [resolve('src'), resolve('test')],
-        options: {
-          formatter: require('eslint-friendly-formatter')
-        }
-      },
+      // {
+      //   test: /\.(js|vue)$/,
+      //   loader: 'eslint-loader',
+      //   enforce: 'pre',
+      //   include: [resolve('src'), resolve('test')],
+      //   options: {
+      //     formatter: require('eslint-friendly-formatter')
+      //   }
+      // },
       {
         test: /\.vue$/,
         loader: 'vue-loader',
@@ -72,5 +73,5 @@ let webpackConfig = {
 
 
 module.exports = vuxLoader.merge(webpackConfig, {
-  plugins: ['vux-ui', 'progress-bar', 'duplicate-style']
+  plugins: [{name: 'vux-ui'}, {name: 'progress-bar'}, {name: 'duplicate-style'},{name: 'less-theme', path:'src/styles/theme.less'}]
 })

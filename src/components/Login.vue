@@ -1,25 +1,27 @@
 <template>
   <div>
     <div class="vux-demo">
-      <img class="logo" src="../assets/vux_logo.png">
-      <h3>西滨精工</h3>
+      <img class="logo" src="../../static/logo/LOGO3.jpg">
     </div>
     <group title="登陆" labelAlign="left" labelWidth="80px">
       <x-input title="用户名" type="text"  v-model="user.userName" :required="true"></x-input>
       <x-input title="密码" type="password" v-model="user.password" :required="true"></x-input>
-      <x-button plain class="custom-primary-blue" @click.native="handleLogin">登陆</x-button>
-      <x-button plain class="custom-primary-red">重置</x-button>
+      <x-button type="primary" @click.native="handleLogin">登陆</x-button>
+      <x-button type="warn">重置</x-button>
+      <x-button type="primary" @click.native="handleWXLogin">微信登陆</x-button>
     </group>
   </div>
 </template>
 
 <script>
-import {Group, Cell, XInput, XButton, Alert, AlertPlugin, Grid, GridItem} from 'vux'
-import {requestLogin} from '../api/sysApi'
+import {Toast, Group, Cell, XInput, XButton, Alert, AlertPlugin, Grid, GridItem} from 'vux'
+import {wxLogin,requestLogin} from '../api/sysApi'
+import util from '../../common/js/util'
 import Vue from 'vue'
 Vue.use(AlertPlugin)
 export default {
   components: {
+    Toast,
     Group,
     Cell,
     XInput,
@@ -38,7 +40,55 @@ export default {
       user: {userName: '', password: ''}
     }
   },
+  mounted () {
+    let skipToUrl = localStorage.getItem('skipToUrl')
+    if (skipToUrl !== '' && skipToUrl !== null&&skipToUrl !== '/') {
+      this.$vux.toast.text('登陆信息已超时，请重新登陆', 'buttom')
+    }
+    let currentUrl = window.location.href;
+    let index1 = currentUrl.indexOf('?');
+    let index2 = currentUrl.indexOf('&');
+    let paramStr = currentUrl.substring(index1+1,index2);
+    let code = paramStr.split('=')[1];
+    if(code!== null&&code!==""&&code!==undefined){
+      wxLogin({code:code}).then((resdata) => {
+        console.log(resdata)
+				let { msg, code, data } = resdata.data
+        if (code !== 200) {
+          this.$vux.alert.show({
+            title: '登陆失败',
+            content: msg,
+            onShow () {
+
+            },
+            onHide () {
+
+            }
+          })
+        } else {
+          // util.setCookie('user', JSON.stringify(data), 1)
+          let userData = JSON.stringify(data)
+          // 设置过期时间
+          let overTime = new Date().getTime() + 60*60*1000
+          localStorage.setItem('user', userData)
+          localStorage.setItem('overTime', overTime)
+          let skipToUrl = sessionStorage.getItem('skipToUrl')
+          let query = sessionStorage.getItem('query')
+          if (skipToUrl !== '' && skipToUrl !== null && skipToUrl !== '/') {
+            this.$router.push({path: skipToUrl, query: JSON.parse(query)})
+          } else {
+            this.$router.push({ path: '/Menu' })
+          }
+        }
+				}).catch((data) => {
+          alert(data)                    
+      });
+    }
+  },
   methods: {
+    handleWXLogin: function () {
+      window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxce961a786a558fb8&redirect_uri=http://www.xbjg.org/xibin-mobile&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
+    },
     handleLogin: function () {
       let loginParams = {data: JSON.stringify({userName: this.user.userName, password: this.user.password})}
       requestLogin(loginParams).then(resdata => {
@@ -55,8 +105,19 @@ export default {
             }
           })
         } else {
-          sessionStorage.setItem('user', JSON.stringify(data))
-          this.$router.push({ path: '/Menu' })
+          // util.setCookie('user', JSON.stringify(data), 1)
+          let userData = JSON.stringify(data)
+          // 设置过期时间
+          let overTime = new Date().getTime() + 60*60*1000
+          localStorage.setItem('user', userData)
+          localStorage.setItem('overTime', overTime)
+          let skipToUrl = sessionStorage.getItem('skipToUrl')
+          let query = sessionStorage.getItem('query')
+          if (skipToUrl !== '' && skipToUrl !== null && skipToUrl !== '/') {
+            this.$router.push({path: skipToUrl, query: JSON.parse(query)})
+          } else {
+            this.$router.push({ path: '/Menu' })
+          }
         }
       })
     }
@@ -69,8 +130,10 @@ export default {
   text-align: center;
 }
 .logo {
-  width: 100px;
-  height: 100px
+  margin-top: 20%;
+  margin-bottom: 40%;
+  width: 217px;
+  height: 46px
 }
 .custom-primary-blue {
   border-radius: 5px!important;

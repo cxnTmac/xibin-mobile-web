@@ -6,6 +6,9 @@ import Login from '@/components/Login'
 import fittingTypeSelect from '@/components/basicdata/fittingTypeSelect'
 import fittingSkuSelect from '@/components/basicdata/fittingSkuSelect'
 import fittingSkuShow from '@/components/basicdata/fittingSkuShow'
+import outboundPick from '@/components/outboundPick/outboundPick'
+import outboundPick2 from '@/components/outboundPick2/outboundPick2'
+import outboundShip from '@/components/outboundShip/outboundShip'
 Vue.use(Router)
 let routes = [
   {
@@ -19,14 +22,29 @@ let routes = [
     component: fittingTypeSelect
   },
   {
-    path: '/fittingSkuSelect/*',
+    path: '/fittingSkuSelect',
     name: '产品选择',
     component: fittingSkuSelect
   },
   {
-    path: '/fittingSkuShow/*',
+    path: '/fittingSkuShow',
     name: '产品展示',
     component: fittingSkuShow
+  },
+  {
+    path: '/outboundPick',
+    name: '出库拣货',
+    component: outboundPick
+  },
+  {
+    path: '/outboundPick2',
+    name: '出库拣货',
+    component: outboundPick2
+  },
+  {
+    path: '/outboundShip',
+    name: '发货',
+    component: outboundShip
   },
   {
     path: '/login',

@@ -1,6 +1,8 @@
 <template>
   <div>
-    <x-header :left-options="{preventGoBack:true}" @on-click-back = "onClickBack">产品详情</x-header>
+    <sticky>
+      <x-header :left-options="{preventGoBack:true}" @on-click-back = "onClickBack">产品详情</x-header>
+    </sticky>
     <!--<swiper aspect-ratio :height="getWindowHeight" v-model="index">-->
     <swiper :aspect-ratio="3/4"  v-model="index">
       <swiper-item  v-for="(item, index) in getZipPics" :key="index">
@@ -18,7 +20,7 @@
 </template>
 
 <script>
-import {Group, Cell, XInput, XButton, Alert, AlertPlugin, Scroller, Swiper, SwiperItem, FormPreview, Divider, Previewer, TransferDom, XHeader} from 'vux'
+import {Group, Cell, XInput, XButton, Alert, AlertPlugin, Scroller, Swiper, SwiperItem, FormPreview, Divider, Previewer, TransferDom, XHeader, Sticky} from 'vux'
 // import {requestLogin} from '../api/sysApi'
 import {getFittingSkuBySkuCode, getFittingSkuPicBySkuCode} from '../../api/fittingSkuApi'
 import Vue from 'vue'
@@ -63,11 +65,11 @@ export default {
     FormPreview,
     Divider,
     Previewer,
-    XHeader
+    XHeader,
+    Sticky
   },
   data () {
     return {
-      fittingSkuCode: '',
       fittingSku: null,
       fittingSkuPics: [],
       index: 2,
@@ -99,10 +101,10 @@ export default {
         value: '4.00'
       }],
       buttons1: [{
-        style: 'default',
+        style: 'primary',
         text: '查看库存'
       }, {
-        style: 'primary',
+        style: 'default',
         text: '返回',
         link: '/fittingSkuSelect/'
       }]
@@ -113,6 +115,9 @@ export default {
     }
   },
   computed: {
+    fittingSkuCode: function () {
+      return this.$store.state.basicdata.fittingSkuCode
+    },
     skuDataToFormList: function () {
       let list = []
       if (this.fittingSku !== null) {
@@ -184,7 +189,6 @@ export default {
     }
   },
   mounted () {
-    this.fittingSkuCode = this.$route.query.fittingSkuCode
     this.getSku()
     this.getSkuPics()
   }
