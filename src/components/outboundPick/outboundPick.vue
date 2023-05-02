@@ -272,33 +272,6 @@ export default {
       } else {
         this.getDetailAllocs()
       }
-//      requestAccessToken({url: location.href.split('#')[0]}).then((res) => {
-//        wx.config({
-//          debug: true, // 开启调试模式,
-//          appId: res.data.appId, // 必填，企业号的唯一标识，此处填写企业号corpid
-//          timestamp: res.data.timestamp, // 必填，生成签名的时间戳
-//          nonceStr: res.data.nonceStr, // 必填，生成签名的随机串
-//          signature: res.data.signature, // 必填，签名，见附录1
-//          jsApiList: ['scanQRCode'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-//        })
-//      }).catch((data) => {
-//        console.log(data)
-//        alert(data)
-//      })
-//      axios({
-//        method: 'post',
-//        url: 'http://192.168.12.100:8081/xibin/wxApi/getAccessToken.shtml',
-//        data: { url: location.href.split('#')[0] } // 向服务端提供授权url参数，并且不需要#后面的部分
-//      }).then((res) => {
-//        wx.config({
-//          debug: true, // 开启调试模式,
-//          appId: res.appId, // 必填，企业号的唯一标识，此处填写企业号corpid
-//          timestamp: res.timestamp, // 必填，生成签名的时间戳
-//          nonceStr: res.nonceStr, // 必填，生成签名的随机串
-//          signature: res.signature, // 必填，签名，见附录1
-//          jsApiList: ['scanQRCode'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-//        })
-//      })
     }
 }
 </script>

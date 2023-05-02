@@ -4,16 +4,19 @@
     <x-header :left-options="{preventGoBack:true, showBack: false}" :right-options="{showMore: true}" @on-click-more="showMenus = true">功能菜单</x-header>
     </sticky>
     <grid :rows="3">
-      <grid-item label="产品" link="/fittingTypeSelect" >
+      <grid-item  label="产品" link="/fittingTypeSelect" >
         <img slot="icon" src="../../static/icon/sale.png">
       </grid-item>
-      <grid-item label="出库拣货" link="/outboundPick" >
-        <img slot="icon" src="../../static/icon/sale.png">
-      </grid-item>
-      <grid-item label="出库拣货2" link="/outboundPick2" >
+      <grid-item label="出库拣货" link="/outboundPick2" >
         <img slot="icon" src="../../static/icon/sale.png">
       </grid-item>
       <grid-item label="出库发货" link="/outboundShip" >
+        <img slot="icon" src="../../static/icon/sale.png">
+      </grid-item>
+      <grid-item v-if="currentUserName === 'cqx'" label="数据图表" link="/charts" >
+        <img slot="icon" src="../../static/icon/sale.png">
+      </grid-item>
+      <grid-item label="入库收货" link="/inbound" >
         <img slot="icon" src="../../static/icon/sale.png">
       </grid-item>
     </grid>
@@ -45,6 +48,7 @@ export default {
   },
   data () {
     return {
+      currentUserName:"",
       menus: {
         menu1: 'Take Photo',
         menu2: 'Choose from photos'
@@ -57,6 +61,9 @@ export default {
     }
   },
   methods: {
+  },
+  mounted() {
+    this.currentUserName = localStorage.getItem('userName');
   }
 }
 </script>

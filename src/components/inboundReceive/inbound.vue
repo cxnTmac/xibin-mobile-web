@@ -5,7 +5,7 @@
         <x-header
           :left-options="{ preventGoBack: true }"
           @on-click-back="onClickBack"
-          >出库发货<a slot="right" @click="scan">扫描</a></x-header
+          >入库收货<a slot="right" @click="scan">扫描</a></x-header
         >
         <search
           @on-change="changeOrderNo"
@@ -14,7 +14,7 @@
           auto-scroll-to-top
           top="46px"
           @on-submit="onSubmit"
-          placeholder="输入出库单号"
+          placeholder="输入入库单号"
           ref="search"
         >
           <!--<slots name="right"><x-button @click.native="scan">扫描</x-button></slots>-->
@@ -27,39 +27,9 @@
     </group>
     <tab style="margin-top: 0px">
       <tab-item selected @on-item-click="allTabClickHandler">全部</tab-item>
-      <tab-item @on-item-click="unShipTabClickHandler">未发货</tab-item>
-      <tab-item @on-item-click="shipTabClickHandler">已发货</tab-item>
+      <tab-item @on-item-click="unReceiveTabClickHandler">未收货</tab-item>
+      <tab-item @on-item-click="receiveTabClickHandler">已收货</tab-item>
     </tab>
-    <div v-transfer-dom>
-      <popup v-model="pickUpShow" height="270px" is-transparent>
-        <div
-          style="
-            width: 95%;
-            background-color: #fff;
-            height: 250px;
-            margin: 0 auto;
-            border-radius: 5px;
-            padding-top: 10px;
-          "
-        >
-          <group>
-            <x-input
-              title="拣货数"
-              type="number"
-              text-align="right"
-              :required="true"
-              v-model="pickNumInput"
-            ></x-input>
-          </group>
-          <div style="padding: 20px 15px">
-            <x-button type="primary" @click.native="pickUpSumbmit"
-              >拣货确认</x-button
-            >
-            <x-button @click.native="pickUpShow = false">取消</x-button>
-          </div>
-        </div>
-      </popup>
-    </div>
     <div
       v-for="(item, index) in orders"
       class="cardBox"
@@ -67,30 +37,12 @@
     >
       <form-preview
         class="inCard"
-        header-label="发货信息"
+        header-label="收货信息"
         :header-value="getStatus(index)"
         :body-items="skuDataToFormList(index)"
       >
       </form-preview>
       <grid :rows="2" v-if="multiStatus !== null">
-        <grid-item class="cardItem">
-          <x-button
-            class="cardButtonLeft"
-            type="primary"
-            @click.native="ship(index)"
-            :disabled="btnShipStatus(index)"
-            >发货</x-button
-          >
-        </grid-item>
-        <grid-item class="cardItem">
-          <x-button
-            class="cardButtonRight"
-            type="warn"
-            @click.native="cancelShip(index)"
-            :disabled="btnCancelShipStatus(index)"
-            >取消发货</x-button
-          >
-        </grid-item>
       </grid>
     </div>
     <div>
@@ -150,10 +102,8 @@ import {
 // import {getFittingSkuListPage} from '../../api/fittingSkuApi'
 // import {getFittingModelList} from '../../api/modelApi'
 import {
-  getOutboundOrderListPage,
-  shipByHeader,
-  cancelShipByHeader,
-} from "../../api/outboundApi";
+  getInboundOrderListPage
+} from "../../api/inboundApi";
 import Vue from "vue";
 import util from "../../../common/js/util";
 import { requestAccessToken } from "../../api/sysApi";
@@ -211,12 +161,12 @@ export default {
     toDetail(item) {
       this.$store.commit("changeQueryDate", this.date);
       this.$router.push({
-        path: "/outboundDetail",
+        path: "/inboundReceive",
         query: {
           orderNo: item.orderNo,
-          customerName: item.buyerName,
+          customerName: item.supplierName,
           status: util.getComboNameByValue(
-            codemaster.WM_OUTBOUND_STATUS,
+            codemaster.WM_INBOUND_STATUS,
             item.status
           ),
         },
@@ -253,27 +203,13 @@ export default {
       this.multiStatus = null;
       this.getOrders();
     },
-    unShipTabClickHandler: function () {
-      this.multiStatus = "'60'";
+    unReceiveTabClickHandler: function () {
+      this.multiStatus = "'10'";
       this.getOrders();
     },
-    shipTabClickHandler: function () {
-      this.multiStatus = "'80'";
+    receiveTabClickHandler: function () {
+      this.multiStatus = "'20'";
       this.getOrders();
-    },
-    btnShipStatus: function (index) {
-      if (this.orders[index].status === "60") {
-        return false;
-      } else if (this.orders[index].status === "80") {
-        return true;
-      }
-    },
-    btnCancelShipStatus: function (index) {
-      if (this.orders[index].status === "60") {
-        return true;
-      } else if (this.orders[index].status === "80") {
-        return false;
-      }
     },
     onClickBack() {
       this.$router.push({
@@ -282,7 +218,7 @@ export default {
     },
     getStatus: function (index) {
       return util.getComboNameByValue(
-        codemaster.WM_OUTBOUND_STATUS,
+        codemaster.WM_INBOUND_STATUS,
         this.orders[index].status
       );
     },
@@ -290,16 +226,16 @@ export default {
       let list = [];
       if (this.orders[index] !== null) {
         list.push({
-          label: "出库单号",
+          label: "入库单号",
           value: this.orders[index].orderNo,
         });
         list.push({
-          label: "客户编码",
-          value: this.orders[index].buyerCode,
+          label: "供应商编码",
+          value: this.orders[index].supplierCode,
         });
         list.push({
-          label: "客户名称",
-          value: this.orders[index].buyerName,
+          label: "供应商名称",
+          value: this.orders[index].supplierName,
         });
       }
       return list;
@@ -315,7 +251,7 @@ export default {
           orderTimeTo: this.date + " " + "23:59:59",
         }),
       };
-      getOutboundOrderListPage(para)
+      getInboundOrderListPage(para)
         .then((res) => {
           this.total = res.data.size;
           this.orders = res.data.list;
@@ -329,34 +265,6 @@ export default {
       this.page = 1;
       this.orders = [];
       this.getOrders();
-    },
-    ship(index) {
-      shipByHeader({
-        orderNo: this.orders[index].orderNo,
-      })
-        .then((res) => {
-          this.$vux.toast.text(res.data.msg, "buttom");
-          if (res.data.code === 200) {
-            this.getOrders();
-          }
-        })
-        .catch((data) => {
-          util.errorCallBack(data, this.$router);
-        });
-    },
-    cancelShip(index) {
-      cancelShipByHeader({
-        orderNo: this.orders[index].orderNo,
-      })
-        .then((res) => {
-          this.$vux.toast.text(res.data.msg, "buttom");
-          if (res.data.code === 200) {
-            this.getOrders();
-          }
-        })
-        .catch((data) => {
-          util.errorCallBack(data, this.$router);
-        });
     },
     nextPage() {
       let totalPage = Math.ceil(this.total / this.size);

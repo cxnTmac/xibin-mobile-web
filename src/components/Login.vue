@@ -41,6 +41,7 @@ export default {
     }
   },
   mounted () {
+    this.user = {userName:localStorage.getItem('userName'),password:localStorage.getItem('password')};
     let skipToUrl = localStorage.getItem('skipToUrl')
     if (skipToUrl !== '' && skipToUrl !== null&&skipToUrl !== '/') {
       this.$vux.toast.text('登陆信息已超时，请重新登陆', 'buttom')
@@ -49,7 +50,9 @@ export default {
     let index1 = currentUrl.indexOf('?');
     let index2 = currentUrl.indexOf('&');
     let paramStr = currentUrl.substring(index1+1,index2);
+    console.log(paramStr);
     let code = paramStr.split('=')[1];
+    console.log(code);
     if(code!== null&&code!==""&&code!==undefined){
       wxLogin({code:code}).then((resdata) => {
         console.log(resdata)
@@ -69,7 +72,7 @@ export default {
           // util.setCookie('user', JSON.stringify(data), 1)
           let userData = JSON.stringify(data)
           // 设置过期时间
-          let overTime = new Date().getTime() + 60*60*1000
+          let overTime = new Date().getTime() + 600*60*1000
           localStorage.setItem('user', userData)
           localStorage.setItem('overTime', overTime)
           let skipToUrl = sessionStorage.getItem('skipToUrl')
@@ -90,7 +93,7 @@ export default {
       window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxce961a786a558fb8&redirect_uri=http://www.xbjg.org/xibin-mobile&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
     },
     handleLogin: function () {
-      let loginParams = {data: JSON.stringify({userName: this.user.userName, password: this.user.password})}
+      let loginParams = {username: this.user.userName, password: this.user.password};
       requestLogin(loginParams).then(resdata => {
         let { msg, code, data } = resdata
         if (code !== 200) {
@@ -111,6 +114,8 @@ export default {
           let overTime = new Date().getTime() + 60*60*1000
           localStorage.setItem('user', userData)
           localStorage.setItem('overTime', overTime)
+          localStorage.setItem('userName', this.user.userName)
+          localStorage.setItem('password', this.user.password)
           let skipToUrl = sessionStorage.getItem('skipToUrl')
           let query = sessionStorage.getItem('query')
           if (skipToUrl !== '' && skipToUrl !== null && skipToUrl !== '/') {

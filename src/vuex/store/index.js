@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import * as actions from './actions'
 import * as getters from './getters'
 import inbound from './modules/inbound'
+import outbound from './modules/outbound'
 import basicdata from './modules/basicdata'
 
 Vue.use(Vuex)
@@ -13,6 +14,7 @@ export default new Vuex.Store({
   getters,
   modules: {
     'inbound': inbound,
-    'basicdata': basicdata
+    'basicdata': basicdata,
+    'outbound': outbound
   }
 })
