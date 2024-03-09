@@ -53,7 +53,7 @@
             <th>产品名称</th>
             <th>车型</th>
             <th>数量</th>
-            <th style="width: 10%" v-if="currentUserName === 'cqx'">价格</th>
+            <th style="width: 10%" >价格</th>
             <th style="width: 10%">状态</th>
           </tr>
         </thead>
@@ -61,7 +61,6 @@
           <template v-for="(item, index) in orderDetail">
           <tr
             v-bind:key="index"
-            @click="pickUpOrCancel(item, index)"
             class="FONT"
           >
             <td>{{ item.lineNo }}</td>
@@ -69,7 +68,7 @@
             <td>{{ item.skuName }}</td>
             <td>{{ item.modelCode }}</td>
             <td>{{ item.outboundNum }}</td>
-            <td v-if="currentUserName === 'cqx'">{{ item.outboundPrice }}</td>
+            <td>{{ item.outboundPrice }}</td>
             <td>{{ getStatus(item.status) }}</td>
           </tr>
           </template>
@@ -196,37 +195,8 @@ export default {
         status
       );
     },
-    isWx() {
-      //window.navigator.userAgent属性包含了浏览器类型、版本、操作系统类型、浏览器引擎类型等信息，这个属性可以用来判断浏览器类型
-      var ua = window.navigator.userAgent.toLowerCase();
-      //通过正则表达式匹配ua中是否含有MicroMessenger字符串
-      if (ua.match(/MicroMessenger/i) == "micromessenger") {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    scan() {
-      if (!this.isWx()) {
-        window.xbjgApp.startQrcodeScan();
-      } else {
-        var _this = this;
-        wx.scanQRCode({
-          needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
-          scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
-          success: function (res) {
-            _this.orderNo = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
-            alert(res.resultStr);
-            _this.onSubmit();
-          },
-        });
-      }
-    },
-    onQrcodeScanResult(scanResult) {
-      this.orderNo = scanResult;
-      alert(scanResult);
-      this.onSubmit();
-    },
+    
+
     changeOrderNo(orderNo) {
       this.orderNo = orderNo;
     },
@@ -281,7 +251,6 @@ export default {
     }
   },
   created() {
-    window.onQrcodeScanResult = this.onQrcodeScanResult;
     this.page = 1;
   },
   mounted() {
@@ -298,22 +267,6 @@ export default {
     } else {
       this.getDetails();
     }
-    requestAccessToken({
-      url: encodeURIComponent(window.location.href.split("#")[0]),
-    })
-      .then((res) => {
-        wx.config({
-          // debug: true, // 开启调试模式,
-          appId: res.data.appId, // 必填，企业号的唯一标识，此处填写企业号corpid
-          timestamp: res.data.timestamp, // 必填，生成签名的时间戳
-          nonceStr: res.data.nonceStr, // 必填，生成签名的随机串
-          signature: res.data.signature, // 必填，签名，见附录1
-          jsApiList: ["scanQRCode"], // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-        });
-      })
-      .catch((data) => {
-        console.log(data);
-      });
   },
 };
 </script>

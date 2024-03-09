@@ -5,19 +5,22 @@
     </sticky>
     <grid :rows="3">
       <grid-item  label="产品" link="/fittingTypeSelect" >
-        <img slot="icon" src="../../static/icon/sale.png">
+        <img slot="icon" src="../../static/icon/doc.png">
       </grid-item>
-      <grid-item label="出库拣货" link="/outboundPick2" >
-        <img slot="icon" src="../../static/icon/sale.png">
+      <grid-item label="出库拣货" link="/outboundPickSelect" >
+        <img slot="icon" src="../../static/icon/audit.png">
       </grid-item>
       <grid-item label="出库发货" link="/outboundShip" >
-        <img slot="icon" src="../../static/icon/sale.png">
+        <img slot="icon" src="../../static/icon/contrail.png">
       </grid-item>
       <grid-item v-if="currentUserName === 'cqx'" label="数据图表" link="/charts" >
         <img slot="icon" src="../../static/icon/sale.png">
       </grid-item>
       <grid-item label="入库收货" link="/inbound" >
-        <img slot="icon" src="../../static/icon/sale.png">
+        <img slot="icon" src="../../static/icon/report.png">
+      </grid-item>
+      <grid-item label="扫码出库" link="/outboundScanSelect" >
+        <img slot="icon" src="../../static/icon/operation.png">
       </grid-item>
     </grid>
   </div>

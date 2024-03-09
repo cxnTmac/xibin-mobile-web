@@ -6,8 +6,10 @@ import Login from '@/components/Login'
 import fittingTypeSelect from '@/components/basicdata/fittingTypeSelect'
 import fittingSkuSelect from '@/components/basicdata/fittingSkuSelect'
 import fittingSkuShow from '@/components/basicdata/fittingSkuShow'
-import outboundPick from '@/components/outboundPick/outboundPick'
+import outboundPickSelect from '@/components/outboundPick2/outboundPickSelect'
 import outboundPick2 from '@/components/outboundPick2/outboundPick2'
+import outboundScanSelect from '@/components/outboundScan/outboundScanSelect'
+import outboundScan from '@/components/outboundScan/outboundScan'
 import outboundShip from '@/components/outboundShip/outboundShip'
 import outboundDetail from '@/components/outboundShip/outboundDetail'
 import inbound from '@/components/inboundReceive/inbound'
@@ -26,6 +28,16 @@ let routes = [
     component: fittingTypeSelect
   },
   {
+    path: '/outboundScanSelect',
+    name: '扫码出库查询',
+    component: outboundScanSelect
+  },
+  {
+    path: '/outboundScan',
+    name: '扫码出库',
+    component: outboundScan
+  },
+  {
     path: '/fittingSkuSelect',
     name: '产品选择',
     component: fittingSkuSelect
@@ -36,9 +48,9 @@ let routes = [
     component: fittingSkuShow
   },
   {
-    path: '/outboundPick',
-    name: '出库拣货',
-    component: outboundPick
+    path: '/outboundPickSelect',
+    name: '出库拣货查询',
+    component: outboundPickSelect
   },
   {
     path: '/outboundPick2',

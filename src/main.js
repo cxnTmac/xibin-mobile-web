@@ -9,6 +9,8 @@ import App from './App'
 import routes from '@/router/index'
 import store from '@/vuex/store'
 import util from '../common/js/util'
+import VueClipboard from 'vue-clipboard2'
+Vue.use(VueClipboard)
 Vue.use(VueRouter)
 Vue.use(Vuex)
 // const routes = [{
@@ -59,9 +61,53 @@ router.beforeEach((to, from, next) => {
   }
 })
 FastClick.attach(document.body)
-
 Vue.config.productionTip = false
-
+Vue.directive('left-swipe', {
+  bind(el, binding, vnode) {
+    let startX;
+    el.addEventListener('touchstart', function(e) {
+      startX = e.changedTouches[0].clientX;
+    });
+    el.addEventListener('touchend', function(e) {
+      const endX = e.changedTouches[0].clientX;
+      if ((endX - startX > 50 && Math.abs(endX - startX) / window.innerWidth >= 0.3)) {
+        console.log("向左滑");
+      } else if ((startX - endX > 50 && Math.abs(startX - endX) / window.innerWidth >= 0.3)) {
+        const method = binding.value.method;
+        const para = binding.value.para;
+        if (typeof method === 'function') {
+          method(para); // 直接调用传入的方法
+        } else if (typeof window[method] === 'function') {
+          window[method](para); // 如果传入的是字符串形式的方法名称，则需要从window对象上查找该方法并调用
+        } else {
+          console.error(`无效的方法 ${method}`);
+        }
+      }
+    });
+  },
+  update(el, binding, vnode){
+    let startX;
+    el.addEventListener('touchstart', function(e) {
+      startX = e.changedTouches[0].clientX;
+    });
+    el.addEventListener('touchend', function(e) {
+      const endX = e.changedTouches[0].clientX;
+      if ((endX - startX > 50 && Math.abs(endX - startX) / window.innerWidth >= 0.3)) {
+        console.log("向左滑");
+      } else if ((startX - endX > 50 && Math.abs(startX - endX) / window.innerWidth >= 0.3)) {
+        const method = binding.value.method;
+        const para = binding.value.para;
+        if (typeof method === 'function') {
+          method(para); // 直接调用传入的方法
+        } else if (typeof window[method] === 'function') {
+          window[method](para); // 如果传入的是字符串形式的方法名称，则需要从window对象上查找该方法并调用
+        } else {
+          console.error(`无效的方法 ${method}`);
+        }
+      }
+    });
+  }
+});
 /* eslint-disable no-new */
 new Vue({
   store,

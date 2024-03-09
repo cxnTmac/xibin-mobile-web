@@ -81,8 +81,9 @@
     {"code":"99","name":"关闭订单"}
   ],
   "WM_OUTBOUND_TYPE":[
-    {"code":"PO","name":"普通出库"},
-    {"code":"RO","name":"退货出库"},
+    {"code":"PO","name":"赊销出库"},
+    {"code":"XX","name":"现销出库"},
+    {"code":"RO","name":"外购退货"},
     {"code":"CO","name":"盘亏出库"}
   ],
   "WM_ASSEMBLE_TYPE":[
@@ -140,5 +141,15 @@
   "FI_BOOK_STATUS":[
     {"code":"00","name":"创建"},
     {"code":"10","name":"已结账"}
+  ],
+  "WM_IS_RECIEVED_CASH":[
+    {"code":"Y","name":"已收到现金"},
+    {"code":"N","name":"未收到现金"},
+    {"code":"NO_CASH","name":"非现金订单"}
+  ],
+  "BD_CUSTOMER_PAYMENT_CATEGORY":[
+    {"code":"CASH","name":"现金"},
+    {"code":"ON_DElLIVERY","name":"货到付款"},
+    {"code":"PERIOD","name":"账期"}
   ]
 }

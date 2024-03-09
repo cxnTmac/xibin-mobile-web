@@ -6,3 +6,5 @@ export const getFittingSkuListPage = params => { return axios.get(`/xibin/fittin
 export const getFittingSkuBySkuCode = params => { return axios.get(`/xibin/fittingSku/getFittingTypeSkuBySkuCode`, { params: params }) }
 
 export const getFittingSkuPicBySkuCode = params => { return axios.get(`/xibin/fittingSku/getFittingSkuPic`, { params: params }) }
+
+export const getSkuBySkuCode = params => { return axios.get(`/xibin/fittingSku/getSkuBySkuCode`, { params: params }) }

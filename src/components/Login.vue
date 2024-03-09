@@ -72,7 +72,7 @@ export default {
           // util.setCookie('user', JSON.stringify(data), 1)
           let userData = JSON.stringify(data)
           // 设置过期时间
-          let overTime = new Date().getTime() + 600*60*1000
+          let overTime = new Date().getTime() + 28800000
           localStorage.setItem('user', userData)
           localStorage.setItem('overTime', overTime)
           let skipToUrl = sessionStorage.getItem('skipToUrl')

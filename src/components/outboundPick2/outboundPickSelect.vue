@@ -2,7 +2,7 @@
   <div>
     <div style="height: 44px; z-index: 999">
       <sticky>
-        <x-header :left-options="{ preventGoBack: true }" @on-click-back="onClickBack">出库发货<a slot="right"
+        <x-header :left-options="{ preventGoBack: true }" @on-click-back="onClickBack">出库拣货<a slot="right"
             @click="scan">扫描</a></x-header>
         <search @on-change="changeOrderNo" v-model="orderNo" position="absolute" auto-scroll-to-top top="46px"
           @on-submit="onSubmit" placeholder="输入出库单号" ref="search">
@@ -16,51 +16,21 @@
     </group>
     <tab style="margin-top: 0px">
       <tab-item selected @on-item-click="allTabClickHandler">全部</tab-item>
-      <tab-item @on-item-click="unShipTabClickHandler">未完全发货</tab-item>
-      <tab-item @on-item-click="shipTabClickHandler">已完全发货</tab-item>
+      <tab-item @on-item-click="unShipTabClickHandler">未完全拣货</tab-item>
+      <tab-item @on-item-click="shipTabClickHandler">已完全拣货</tab-item>
     </tab>
-    <div v-transfer-dom>
-      <popup v-model="pickUpShow" height="270px" is-transparent>
-        <div style="
-            width: 95%;
-            background-color: #fff;
-            height: 250px;
-            margin: 0 auto;
-            border-radius: 5px;
-            padding-top: 10px;
-          ">
-          <group>
-            <x-input title="拣货数" type="number" text-align="right" :required="true" v-model="pickNumInput"></x-input>
-          </group>
-          <div style="padding: 20px 15px">
-            <x-button type="primary" @click.native="pickUpSumbmit">拣货确认</x-button>
-            <x-button @click.native="pickUpShow = false">取消</x-button>
-          </div>
-        </div>
-      </popup>
-    </div>
     <div v-for="(item, index) in orders" class="cardBox">
       <div @click="toDetail(item)">
         <form-preview class="inCard" header-label="发货信息" :header-value="getStatus(index)"
           :body-items="skuDataToFormList(index)">
         </form-preview>
-        <cell title="客户类型"><x-button mini :type="getColorByPaymentCategory(item.paymentCategory)">{{
-          getComboNameByValue(PAYMENT_CATEGORY, item.paymentCategory) }}</x-button>
+        <cell title="客户类型"><x-button mini
+            :type="getColorByPaymentCategory(item.paymentCategory)">{{ getComboNameByValue(PAYMENT_CATEGORY, item.paymentCategory) }}</x-button>
         </cell>
-        <cell title="是否打款"><x-button mini :type="getColorByIsReceivedCash(item.isRecievedCash)">{{
-          getComboNameByValue(IS_RECEIVED_CASH, item.isRecievedCash) }}</x-button>
+        <cell title="是否打款"><x-button mini
+            :type="getColorByIsReceivedCash(item.isRecievedCash)">{{ getComboNameByValue(IS_RECEIVED_CASH, item.isRecievedCash) }}</x-button>
         </cell>
       </div>
-      <grid :rows="2" v-if="multiStatus !== null">
-        <grid-item class="cardItem">
-          <x-button class="cardButtonLeft" type="primary" @click.native="ship(index)"
-            :disabled="btnShipStatus(index)">发货</x-button>
-        </grid-item>
-        <grid-item class="cardItem">
-          <x-button class="cardButtonRight" type="warn" @click.native="cancelShip(index)"
-            :disabled="btnCancelShipStatus(index)">取消发货</x-button>
-        </grid-item>
-      </grid>
     </div>
     <div>
       <grid :rows="3" style="margin-top: 20px">
@@ -79,27 +49,6 @@
         </grid-item>
       </grid>
     </div>
-    <div v-transfer-dom>
-      <popup v-model="shipShow" height="270px" is-transparent>
-        <div style="
-            width: 95%;
-            background-color: #fff;
-            height: 250px;
-            margin: 0 auto;
-            border-radius: 5px;
-            padding-top: 10px;
-          ">
-          <group>
-            <x-textarea title="备注" v-model="mark"></x-textarea>
-          </group>
-          <div style="padding: 20px 15px">
-            <x-button type="primary" @click.native="getPackageNum">件数自动计算</x-button>
-            <x-button type="primary" @click.native="shipSubmit">发货确认</x-button>
-          </div>
-        </div>
-      </popup>
-    </div>
-
   </div>
 </template>
 
@@ -110,8 +59,6 @@ import {
   TransferDom,
   Popup,
   FormPreview,
-  Grid,
-  GridItem,
   XSwitch,
   Group,
   Cell,
@@ -130,7 +77,9 @@ import {
   Toast,
   ToastPlugin,
   Datetime,
-  XTextarea
+  XTextarea,
+  Grid,
+  GridItem
 } from "vux";
 import util from "../../common/util";
 // import {requestLogin} from '../api/sysApi'
@@ -159,8 +108,6 @@ export default {
     TabItem,
     Popup,
     FormPreview,
-    Grid,
-    GridItem,
     XSwitch,
     Group,
     Cell,
@@ -179,7 +126,9 @@ export default {
     Toast,
     ToastPlugin,
     Datetime,
-    XTextarea
+    XTextarea,
+    Grid,
+    GridItem
   },
   data() {
     return {
@@ -191,11 +140,8 @@ export default {
       total: 0,
       listLoading: false,
       sels: [],
-      pickUpShow: false,
-      pickNumInput: 0,
       currentIndex: 0,
       multiStatus: null,
-      shipShow: false,
       mark: '',
       PAYMENT_CATEGORY: codemaster.BD_CUSTOMER_PAYMENT_CATEGORY,
       OUTBOUND_TYPE: codemaster.WM_OUTBOUND_TYPE,
@@ -209,14 +155,9 @@ export default {
     toDetail(item) {
       this.$store.commit("changeQueryDate", this.date);
       this.$router.push({
-        path: "/outboundDetail",
+        path: "/outboundPick2",
         query: {
-          orderNo: item.orderNo,
-          customerName: item.buyerName,
-          status: util.getComboNameByValue(
-            codemaster.WM_OUTBOUND_STATUS,
-            item.status
-          ),
+          orderNo: item.orderNo
         },
       });
     },
@@ -234,7 +175,7 @@ export default {
           success: function (res) {
             _this.orderNo = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
             alert(res.resultStr);
-            _this.onSubmit();
+            _this.toDetail({orderNo:res.resultStr});
           },
         });
       }
@@ -252,26 +193,12 @@ export default {
       this.getOrders();
     },
     unShipTabClickHandler: function () {
-      this.multiStatus = "'50'" + "," + "'60'" + "," + "'70'";;
+      this.multiStatus = "'50'" + "," + "'40'" + "," + "'70'" + "," + "'30'";
       this.getOrders();
     },
     shipTabClickHandler: function () {
-      this.multiStatus = "'80'";
+      this.multiStatus = "'60'";
       this.getOrders();
-    },
-    btnShipStatus: function (index) {
-      if (this.orders[index].status === "60" || this.orders[index].status === "50" || this.orders[index].status === "70") {
-        return false;
-      } else if (this.orders[index].status === "80") {
-        return true;
-      }
-    },
-    btnCancelShipStatus: function (index) {
-      if (this.orders[index].status === "60" || this.orders[index].status === "50") {
-        return true;
-      } else if (this.orders[index].status === "80" || this.orders[index].status === "70") {
-        return false;
-      }
     },
     onClickBack() {
       this.$router.push({
@@ -287,7 +214,7 @@ export default {
           codemaster.WM_OUTBOUND_STATUS,
           this.orders[index].status
         );
-      } else {
+      }else{
         return util.getComboNameByValue(
           codemaster.WM_OUTBOUND_STATUS,
           this.orders[index].status);
@@ -362,87 +289,6 @@ export default {
       this.page = 1;
       this.orders = [];
       this.getOrders();
-    },
-    getPackageNum() {
-      let para = { orderNo: this.orders[this.currentIndex].orderNo };
-      getTotalPackageNumByOrderNo(para)
-        .then((res) => {
-          this.mark = res.data.data + '';
-        }).catch((data) => {
-          util.errorCallBack(data, this.$router, this.$message);
-        });
-    },
-    copyToClipboard(order) {
-      let _this = this;
-      let str = "订单[" + order.orderNo + "]" + "\n" + "货主[" + order.buyerName + "]" + "\n" + "已经发货！请打印清单，信封以及装箱单！"
-      util.syncHandle(() => {
-        this.$copyText(str).then(
-          (success) => {
-            _this.$vux.alert.show({
-              title: '发货成功',
-              content: str
-            });
-            console.log('复制成功');
-          },
-          (err) => {
-            _this.$vux.alert.show({
-              title: '复制消息失败',
-              content: '无法复制消息！'
-            });
-            console.error('复制失败', err);
-          }
-        )
-      });
-    },
-    shipSubmit() {
-      let newOrder = this.orders[this.currentIndex];
-      newOrder.remark = this.mark;
-      let orderNo = newOrder.orderNo;
-      saveOutboundOrder({
-        order: JSON.stringify(newOrder)
-      }).then(
-        (res) => {
-          if (res.data.code != 200) {
-            this.$vux.toast.text(res.data.msg, "buttom");
-          } else {
-            shipByHeader({
-              orderNo: orderNo,
-            })
-              .then((res) => {
-                this.copyToClipboard(newOrder);
-                this.$vux.toast.text(res.data.msg, "buttom");
-                if (res.data.code === 200) {
-                  this.shipShow = false;
-                  this.getOrders();
-                }
-              })
-              .catch((data) => {
-                util.errorCallBack(data, this.$router);
-              });
-          }
-        }).catch((data) => {
-          util.errorCallBack(data, this.$router);
-        });
-
-    },
-    ship(index) {
-      this.currentIndex = index;
-      this.shipShow = true;
-      this.mark = this.orders[index].remark;
-    },
-    cancelShip(index) {
-      cancelShipByHeader({
-        orderNo: this.orders[index].orderNo,
-      })
-        .then((res) => {
-          this.$vux.toast.text(res.data.msg, "buttom");
-          if (res.data.code === 200) {
-            this.getOrders();
-          }
-        })
-        .catch((data) => {
-          util.errorCallBack(data, this.$router);
-        });
     },
     nextPage() {
       let totalPage = Math.ceil(this.total / this.size);
