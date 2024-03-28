@@ -51,14 +51,21 @@
           getComboNameByValue(IS_RECEIVED_CASH, item.isRecievedCash) }}</x-button>
         </cell>
       </div>
-      <grid :rows="2" v-if="multiStatus !== null">
+      <grid :rows="3" v-if="multiStatus !== null">
         <grid-item class="cardItem">
-          <x-button class="cardButtonLeft" type="primary" @click.native="ship(index)"
-            :disabled="btnShipStatus(index)">发货</x-button>
+          <x-button v-if="!btnShipStatus(index)" class="cardButtonLeft" type="default"
+            @click.native="printCustomerLabel(index)">打印标签</x-button>
+          <x-button v-show="btnShipStatus(index)" class="cardButtonLeft" type="primary"
+            @click.native="ship(index)">发货</x-button>
         </grid-item>
         <grid-item class="cardItem">
-          <x-button class="cardButtonRight" type="warn" @click.native="cancelShip(index)"
-            :disabled="btnCancelShipStatus(index)">取消发货</x-button>
+          <x-button class="cardButtonMid" type="default" @click.native="printBoxLabel(index)">打印装箱单</x-button>
+        </grid-item>
+        <grid-item class="cardItem">
+          <x-button v-if="!btnCancelShipStatus(index)" class="cardButtonRight" type="default"
+            @click.native="printCustomerLabel(index)">打印标签</x-button>
+          <x-button v-show="btnCancelShipStatus(index)" class="cardButtonRight" type="warn"
+            @click.native="cancelShip(index)">取消发货</x-button>
         </grid-item>
       </grid>
     </div>
@@ -147,6 +154,7 @@ import {
 import Vue from "vue";
 import { requestAccessToken } from "../../api/sysApi";
 var codemaster = require("../../../static/codemaster.json");
+var config = require("../../../static/config.json");
 Vue.use(AlertPlugin);
 Vue.use(LoadingPlugin);
 Vue.use(ToastPlugin);
@@ -261,16 +269,16 @@ export default {
     },
     btnShipStatus: function (index) {
       if (this.orders[index].status === "60" || this.orders[index].status === "50" || this.orders[index].status === "70") {
-        return false;
-      } else if (this.orders[index].status === "80") {
         return true;
+      } else if (this.orders[index].status === "80") {
+        return false;
       }
     },
     btnCancelShipStatus: function (index) {
       if (this.orders[index].status === "60" || this.orders[index].status === "50") {
-        return true;
-      } else if (this.orders[index].status === "80" || this.orders[index].status === "70") {
         return false;
+      } else if (this.orders[index].status === "80" || this.orders[index].status === "70") {
+        return true;
       }
     },
     onClickBack() {
@@ -374,9 +382,10 @@ export default {
     },
     copyToClipboard(order) {
       let _this = this;
-      let str = "订单[" + order.orderNo + "]" + "\n" + "货主[" + order.buyerName + "]" + "\n" + "已经发货！请打印清单，信封以及装箱单！"
+      let str = "订单[" + order.orderNo + "]" + "</br>" + "货主[" + order.buyerName + "]" + "</br>" + "已经发货！请打印清单，信封以及装箱单！"
+      let strForCopy = "订单[" + order.orderNo + "]" + "\n" + "货主[" + order.buyerName + "]" + "\n" + "已经发货！请打印清单，信封以及装箱单！"
       util.syncHandle(() => {
-        this.$copyText(str).then(
+        this.$copyText(strForCopy).then(
           (success) => {
             _this.$vux.alert.show({
               title: '发货成功',
@@ -429,6 +438,32 @@ export default {
       this.currentIndex = index;
       this.shipShow = true;
       this.mark = this.orders[index].remark;
+    },
+    printBoxLabel(index) {
+      let user = JSON.parse(localStorage.getItem("user"));
+      window.open(
+        config.reportUrl +
+        "pack?orderNo=" +
+        this.orders[index].orderNo +
+        "&companyId=" +
+        user.companyId +
+        "&warehouseId=" +
+        user.warehouseId +
+        "&mobileUrl=" +
+        config.mobileUrl +
+        "outboundPick?orderNo="
+      );
+    },
+    printCustomerLabel(index) {
+      this.currentIndex = index;
+      let user = JSON.parse(localStorage.getItem("user"));
+      window.open(
+        config.reportUrl +
+        "customerLabelForOrder?customerCode=" +
+        this.orders[index].buyerCode +
+        "&companyId=" +
+        user.companyId
+      );
     },
     cancelShip(index) {
       cancelShipByHeader({
@@ -518,6 +553,14 @@ export default {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 10px;
+}
+
+.cardButtonMid {
+  margin: 0px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .cardButtonRight {

@@ -11,6 +11,7 @@ import outboundPick2 from '@/components/outboundPick2/outboundPick2'
 import outboundScanSelect from '@/components/outboundScan/outboundScanSelect'
 import outboundScan from '@/components/outboundScan/outboundScan'
 import outboundShip from '@/components/outboundShip/outboundShip'
+import outboundPayment from '@/components/outboundPayment/outboundPayment'
 import outboundDetail from '@/components/outboundShip/outboundDetail'
 import inbound from '@/components/inboundReceive/inbound'
 import inboundReceive from '@/components/inboundReceive/inboundReceive'
@@ -66,6 +67,11 @@ let routes = [
     path: '/outboundDetail',
     name: '发货明细',
     component: outboundDetail
+  },
+  {
+    path: '/outboundPayment',
+    name: '销售收款情况',
+    component: outboundPayment
   },
   {
     path: '/inbound',

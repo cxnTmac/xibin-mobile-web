@@ -42,11 +42,11 @@
       </popup>
     </div>
     <div v-transfer-dom>
-      <popup v-model="pickUpShow" height="430px" is-transparent>
+      <popup v-model="pickUpShow" height="500px" is-transparent>
         <div style="
             width: 95%;
             background-color: #fff;
-            height: 420px;
+            height: 490px;
             margin: 0 auto;
             border-radius: 5px;
             padding-top: 10px;
@@ -54,7 +54,9 @@
 
           <div v-if="showGenericSkuInfo" style="margin-left: 3%;">
             <flexbox>
-              <flexbox-item :span="3"><x-button mini type="warn">{{ genericSkuCode }}</x-button></flexbox-item>
+              <flexbox-item :span="4"><x-button mini type="warn">{{ genericSkuCode }}</x-button>
+                <div>{{ genericPackageCode }}</div>
+              </flexbox-item>
               <flexbox-item>
                 <div>{{ genericSkuName }}</div>
                 <div>{{ genericSkuModelCode }}</div>
@@ -62,37 +64,46 @@
             </flexbox>
           </div>
           <div v-if="!showGenericSkuInfo" style="margin-left: 3%;">
-            <flexbox><flexbox-item :span="3">
+            <flexbox><flexbox-item :span="4">
                 <div>{{ currentSkuCode }}</div>
+                <div>包装 {{ currentPackageCode }}</div>
               </flexbox-item>
               <flexbox-item>
                 <div>{{ currentSkuName }}</div>
                 <div>{{ currentModelCode }}</div>
               </flexbox-item>
             </flexbox>
+            <flexbox>
+              <flexbox-item :span="8">
+                <x-input title="包装 " v-model="currentPackageCode"></x-input>
+              </flexbox-item>
+              <flexbox-item><x-button mini type="primary"
+                  @click.native="changePickNum">拣货数凑整</x-button></flexbox-item>
+            </flexbox>
           </div>
-        <group>
-          <!--:max="orderDetailAlloc[currentIndex].outboundNum"  -->
-          <x-number title="拣货数:" :min="0.5" :step="0.5" v-model="pickNumInput" fillable></x-number>
-          <x-number title="件数:" :min="1" v-model="packageNumInput" fillable></x-number>
-        </group>
-        <div style="padding: 20px 15px">
-          <x-button type="primary" @click.native="pickUpSumbmit">整件拣货</x-button>
-          <x-button type="primary" @click.native="unpackedPickUpSumbmit">散件拣货</x-button>
-          <x-button type="primary" @click.native="cancelAllocSubmit">取消分配</x-button>
-          <x-button @click.native="pickUpShow = false">取消</x-button>
+          <group>
+            <!--:max="orderDetailAlloc[currentIndex].outboundNum"  -->
+            <x-number :title="'拣货数：（共'+orderDetailAlloc[currentIndex].outboundNum+')'" :min="1" :step="1" :max="orderDetailAlloc[currentIndex].outboundNum" v-model="pickNumInput" fillable></x-number>
+            <x-number title="件数:" :min="1" v-model="packageNumInput" fillable></x-number>
+          </group>
+          <div style="padding: 20px 15px">
+            <x-button type="primary" @click.native="pickUpSumbmit">整件拣货</x-button>
+            <x-button type="primary" @click.native="unpackedPickUpSumbmit">散件拣货</x-button>
+            <x-button type="primary" @click.native="cancelAllocSubmit">取消分配</x-button>
+            <x-button @click.native="pickUpShow = false">取消</x-button>
+          </div>
         </div>
+      </popup>
     </div>
-    </popup>
-  </div>
-  <div v-transfer-dom>
-    <confirm v-model="deleteConfirmShow" title="删除明细" @on-cancel="deleteDetailCancel" @on-confirm="deleteDetailConfirm">
-      <p style="text-align:center;">确定删除吗？</p>
-    </confirm>
-  </div>
-  <div v-transfer-dom>
-    <popup v-model="detailShow" height="390px" is-transparent>
-      <div style="
+    <div v-transfer-dom>
+      <confirm v-model="deleteConfirmShow" title="删除明细" @on-cancel="deleteDetailCancel"
+        @on-confirm="deleteDetailConfirm">
+        <p style="text-align:center;">确定删除吗？</p>
+      </confirm>
+    </div>
+    <div v-transfer-dom>
+      <popup v-model="detailShow" height="390px" is-transparent>
+        <div style="
             width: 95%;
             background-color: #fff;
             height: 380px;
@@ -100,121 +111,121 @@
             border-radius: 5px;
             padding-top: 10px;
           ">
-        <group>
-          <x-number title="订货数:" :min="0.5" :step="0.5" v-model="outboundNumInput" fillable></x-number>
-        </group>
-        <div style="padding: 20px 15px">
-          <x-button type="primary" @click.native="changeOutboundNum">修改数量并重新分配</x-button>
-          <x-button type="primary" @click.native="cancelAllocSubmitByDetail">取消分配</x-button>
-          <x-button type="primary" @click.native="virtualAllocSubmit">虚拟分配</x-button>
-          <x-button type="warn" @click.native="deleteDetail">删除</x-button>
-          <x-button @click.native="detailShow = false">取消</x-button>
+          <group>
+            <x-number title="订货数:" :min="1" v-model="outboundNumInput" fillable></x-number>
+          </group>
+          <div style="padding: 20px 15px">
+            <x-button type="primary" @click.native="changeOutboundNum">修改数量并重新分配</x-button>
+            <x-button type="primary" @click.native="cancelAllocSubmitByDetail">取消分配</x-button>
+            <x-button type="primary" @click.native="virtualAllocSubmit">虚拟分配</x-button>
+            <x-button type="warn" @click.native="deleteDetail">删除</x-button>
+            <x-button @click.native="detailShow = false">取消</x-button>
+          </div>
         </div>
-      </div>
-    </popup>
-  </div>
+      </popup>
+    </div>
 
-  <x-table>
-    <thead>
-      <tr class="FONT-ORDERHEADER">
-        <th>订单号</th>
-        <th>客户</th>
-        <th>总件数</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="FONT-ORDERHEADER-BODY">
-        <td>{{ orderNo }}</td>
-        <td>{{ customerName }}</td>
-        <td>{{ totalPackageNum }}</td>
-      </tr>
-    </tbody>
-  </x-table>
-  <div v-show="pickViewVisible">
     <x-table>
       <thead>
-        <tr class="FONT-HEADER">
-          <th style="width: 6%">No</th>
-          <th style="width: 14%">产品编码</th>
-          <th>产品名称</th>
-          <th>车型</th>
-          <th>数量</th>
-          <th style="width: 14%">库位</th>
+        <tr class="FONT-ORDERHEADER">
+          <th>订单号</th>
+          <th>客户</th>
+          <th>总件数</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-left-swipe="{ method: rightSwipe, para: item }" v-for="(item, index) in orderDetailAlloc"
-          @click="pickUpOrCancel(item, index)" :class="getTrClass(item)" :id="item.skuCode">
-          <td>{{ item.lineNo }}</td>
-          <td>{{ item.skuCode + "\n" + (item.remark === null ? '' : "(" + item.remark + ")") }}
-            <x-button v-if="item.genericSkuCode !== null" mini type="warn">{{ item.genericSkuCode }}</x-button>
-          </td>
-          <td>{{ item.skuName }}</td>
-          <td>{{ item.modelCode }}</td>
-          <td>{{ getOutboundNum(item) }}</td>
-          <td>{{ item.allocLocCode }}</td>
+        <tr class="FONT-ORDERHEADER-BODY">
+          <td>{{ orderNo }}</td>
+          <td>{{ customerName }}</td>
+          <td>{{ totalPackageNum }}</td>
         </tr>
       </tbody>
     </x-table>
-  </div>
-  <div v-show="packViewVisible">
-    <flexbox>
-      <flexbox-item :span="3">
-        <h1 class="currentPackageNo">{{ "箱:" + this.packageNoInput }}</h1>
-      </flexbox-item>
-      <flexbox-item :span="6">
-        <x-number mini :min=1 v-model="packageNoInput"></x-number>
-      </flexbox-item>
-      <flexbox-item><x-button mini type="primary" @click.native="newBox">新箱子</x-button></flexbox-item>
-    </flexbox>
-    <x-table>
-      <thead>
-        <tr class="FONT-HEADER">
-          <th>箱号</th>
-          <th style="width: 14%">产品编码</th>
-          <th>产品名称</th>
-          <th>车型</th>
-          <th>数量</th>
-          <th style="width: 6%">No</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(item, index) in orderDetailAllocPack" @click="packOrCancel(item, index)"
-          :class="getPackTrClass(item)">
-          <td>{{ item.packageNo }}</td>
-          <td>{{ item.skuCode }}</td>
-          <td>{{ item.skuName }}</td>
-          <td>{{ item.modelCode }}</td>
-          <td>{{ item.outboundNum }}</td>
-          <td>{{ item.lineNo }}</td>
-        </tr>
-      </tbody>
-    </x-table>
-  </div>
-  <div v-show="unAllocViewVisible">
-    <x-table>
-      <thead>
-        <tr class="FONT-HEADER">
-          <th>行号</th>
-          <th>产品编码</th>
-          <th>产品名称</th>
-          <th>车型</th>
-          <th>订货数</th>
-          <th>缺货数</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(item, index) in orderDetail" @click="selectDetail2(item, index)" :class="getDetailTrClass(item)">
-          <td>{{ item.lineNo }}</td>
-          <td>{{ item.skuCode }}</td>
-          <td>{{ item.skuName }}</td>
-          <td>{{ item.modelCode }}</td>
-          <td>{{ item.outboundNum }}</td>
-          <td>{{ item.outboundNum - item.outboundAllocNum }}</td>
-        </tr>
-      </tbody>
-    </x-table>
-  </div>
+    <div v-show="pickViewVisible">
+      <x-table>
+        <thead>
+          <tr class="FONT-HEADER">
+            <th>No</th>
+            <th>产品编码</th>
+            <th>产品名称</th>
+            <th>车型</th>
+            <th>数量</th>
+            <th>库位</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-left-swipe="{ method: rightSwipe, para: item }" v-for="(item, index) in orderDetailAlloc"
+            @click="pickUpOrCancel(item, index)" :class="getTrClass(item)" :id="item.skuCode">
+            <td>{{ item.lineNo }}</td>
+            <td>{{ item.skuCode + "\n" + (item.remark === null ? '' : "(" + item.remark + ")") }}
+              <x-button v-if="item.genericSkuCode !== null" mini type="warn">{{ item.genericSkuCode }}</x-button>
+            </td>
+            <td>{{ item.skuName }}</td>
+            <td>{{ item.modelCode }}</td>
+            <td>{{ getOutboundNum(item) }}</td>
+            <td>{{ item.allocLocCode }}</td>
+          </tr>
+        </tbody>
+      </x-table>
+    </div>
+    <div v-show="packViewVisible">
+      <flexbox>
+        <flexbox-item :span="3">
+          <h1 class="currentPackageNo">{{ "箱:" + this.packageNoInput }}</h1>
+        </flexbox-item>
+        <flexbox-item :span="6">
+          <x-number mini :min=1 v-model="packageNoInput"></x-number>
+        </flexbox-item>
+        <flexbox-item><x-button mini type="primary" @click.native="newBox">新箱子</x-button></flexbox-item>
+      </flexbox>
+      <x-table>
+        <thead>
+          <tr class="FONT-HEADER">
+            <th>箱号</th>
+            <th>产品编码</th>
+            <th>产品名称</th>
+            <th>车型</th>
+            <th>数量</th>
+            <th>No</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in orderDetailAllocPack" @click="packOrCancel(item, index)"
+            :class="getPackTrClass(item)">
+            <td>{{ item.packageNo }}</td>
+            <td>{{ item.skuCode }}</td>
+            <td>{{ item.skuName }}</td>
+            <td>{{ item.modelCode }}</td>
+            <td>{{ item.outboundNum }}</td>
+            <td>{{ item.lineNo }}</td>
+          </tr>
+        </tbody>
+      </x-table>
+    </div>
+    <div v-show="unAllocViewVisible">
+      <x-table>
+        <thead>
+          <tr class="FONT-HEADER">
+            <th>行号</th>
+            <th>产品编码</th>
+            <th>产品名称</th>
+            <th>车型</th>
+            <th>订货数</th>
+            <th>缺货数</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in orderDetail" @click="selectDetail2(item, index)" :class="getDetailTrClass(item)">
+            <td>{{ item.lineNo }}</td>
+            <td>{{ item.skuCode }}</td>
+            <td>{{ item.skuName }}</td>
+            <td>{{ item.modelCode }}</td>
+            <td>{{ item.outboundNum }}</td>
+            <td>{{ item.outboundNum - item.outboundAllocNum }}</td>
+          </tr>
+        </tbody>
+      </x-table>
+    </div>
   </div>
 </template>
 
@@ -270,7 +281,8 @@ import {
   cancelPack,
   getTotalPackageNumByOrderNo,
   selectForMobileAlloc,
-  removeOutboundDetail
+  removeOutboundDetail,
+  updateSkuPackageCode
 } from "../../api/outboundApi";
 import { changeLocByAlloc } from "../../api/inventoryApi";
 import { query } from "../../api/popWinApi";
@@ -353,15 +365,46 @@ export default {
       changeAllocShow: false,
       currentSkuCode: '',
       currentSkuName: '',
+      currentPackageCode: '',
       currentModelCode: '',
       showGenericSkuInfo: false,
       genericSkuCode: '',
       genericSkuName: '',
       genericSkuModelCode: '',
+      genericPackageCode: '',
       deleteConfirmShow: false
     };
   },
+  watch: {
+    pickNumInput(newValue, oldValue) {
+      if (!isNaN(parseFloat(newValue)) && isFinite(newValue)) {
+        this.packageNumInput = this.getPackageNum(this.currentPackageCode, newValue);
+      }
+    },
+    currentPackageCode(newValue, oldValue) {
+      if (newValue !== null && newValue !== '') {
+        this.packageNumInput = this.getPackageNum(newValue, this.pickNumInput);
+      } else {
+        this.packageNumInput = 1;
+      }
+    }
+  },
   methods: {
+    changePickNum() {
+      let numbers = this.currentPackageCode.match(/\d+/g);
+      if(numbers === null){
+        return;
+      }
+      if (numbers.length === 1) {
+        if(this.pickNumInput>=numbers[0]){
+          this.pickNumInput = this.pickNumInput - this.pickNumInput % numbers[0];
+        }
+      } else if (numbers.length === 2) {
+        if(this.pickNumInput>=numbers[1]){
+          this.pickNumInput = this.pickNumInput - this.pickNumInput % numbers[1];
+        }
+      }
+    },
     rightSwipe(para) {
       if (para.allocType === "VIRTUAL") {
         this.$vux.toast.text("虚拟分配库位不能更正库位", "buttom");
@@ -402,7 +445,7 @@ export default {
           _this.$vux.loading.hide();
           _this.$vux.toast.text(res.data.msg, "buttom");
           if (res.data.code === 200) {
-            _this.getUnpackedDetailAllocs();
+            _this.getUnpackedDetailAllocs(false);
             _this.getTotalPackageNum();
           }
         });
@@ -414,7 +457,7 @@ export default {
           _this.$vux.loading.hide();
           _this.$vux.toast.text(res.data.msg, "buttom");
           if (res.data.code === 200) {
-            _this.getUnpackedDetailAllocs();
+            _this.getUnpackedDetailAllocs(false);
             _this.getTotalPackageNum();
           }
         });
@@ -424,15 +467,17 @@ export default {
       if (item.status === "40") {
         this.pickUpShow = true;
         this.currentIndex = index;
-        this.pickNumInput = this.orderDetailAlloc[index].pickNum;
+        this.pickNumInput = this.orderDetailAlloc[index].outboundNum;
         if (item.genericSkuCode !== undefined && item.genericSkuCode !== null && item.genericSkuCode !== '') {
           this.showGenericSkuInfo = true;
           this.genericSkuCode = item.genericSkuCode;
           getSkuBySkuCode({ skuCode: item.genericSkuCode })
             .then((res) => {
               if (res.data !== null) {
+                this.genericPackageCode = res.data.packageCode;
                 this.genericSkuName = res.data.fittingSkuName;
                 this.genericSkuModelCode = res.data.modelCode;
+                this.packageNumInput = this.getPackageNum(this.genericPackageCode, this.pickNumInput);
               }
             })
             .catch((data) => {
@@ -440,14 +485,25 @@ export default {
             });
 
         } else {
+          this.currentPackageCode = item.packageCode;
           this.currentSkuCode = item.skuCode;
           this.currentSkuName = item.skuName;
           this.currentModelCode = item.modelCode;
+          this.packageNumInput = this.getPackageNum(this.currentPackageCode, this.pickNumInput);
         }
       } else if (item.status === "60" || item.status === "65") {
         this.showGenericSkuInfo = false;
         this.cancelPickUp(index);
       }
+    },
+    getPackageNum(packageCode, pickNum) {
+      let numbers = packageCode.match(/\d+/g);
+      if (numbers.length === 1) {
+        return Math.floor(pickNum / numbers[0]);
+      } else if (numbers.length === 2) {
+        return Math.floor(pickNum / numbers[1]);
+      }
+      return 0;
     },
     selectDetail2(item, index) {
       this.detailShow = true;
@@ -554,6 +610,7 @@ export default {
               });
 
           } else {
+            this.currentPackageCode = item.packageCode;
             this.currentSkuCode = item.skuCode;
             this.currentSkuName = item.skuName;
             this.currentModelCode = item.modelCode;
@@ -590,7 +647,7 @@ export default {
       this.pickViewVisible = false;
       this.packViewVisible = true;
       this.unAllocViewVisible = false;
-      this.getUnpackedDetailAllocs();
+      this.getUnpackedDetailAllocs(false);
     },
     unAllocClickHandler: function () {
       this.detailMultiStatus = "'30'" + "," + "'00'" + "," + "'00'";
@@ -628,7 +685,7 @@ export default {
         this.orderDetailAlloc[index].status
       );
     },
-    getUnpackedDetailAllocs() {
+    getUnpackedDetailAllocs(newBoxFlag) {
       if (
         this.orderNo === undefined ||
         this.orderNo === null ||
@@ -658,6 +715,9 @@ export default {
           this.orderDetailAllocPack = res.data.list;
           if (this.orderDetailAllocPack.length > 0) {
             this.customerName = this.orderDetailAllocPack[0].buyerName;
+          }
+          if (newBoxFlag) {
+            this.newBox();
           }
         })
         .catch((data) => {
@@ -742,7 +802,7 @@ export default {
       this.orderDetail = [];
       this.orderDetailAllocPack = [];
       this.getDetailAllocs();
-      this.getUnpackedDetailAllocs();
+      this.getUnpackedDetailAllocs(true);
       this.getDetails();
       this.getTotalPackageNum();
     },
@@ -821,7 +881,7 @@ export default {
         });
     },
     deleteDetailCancel() {
-      this.$vux.toast.text("取消删除！");
+      this.$vux.toast.text("取消删除！", "buttom");
     },
     deleteDetailConfirm() {
       let _this = this;
@@ -836,10 +896,10 @@ export default {
         .then((res) => {
           this.$vux.loading.hide();
           if (res.data.code == 200) {
-            _this.$vux.toast.text("操作成功!");
+            _this.$vux.toast.text("操作成功!", "buttom");
             _this.detailShow = false;
           } else {
-            _this.$vux.toast.text(res.data.msg);
+            _this.$vux.toast.text(res.data.msg, "buttom");
           }
           _this.getDetails();
         })
@@ -944,6 +1004,17 @@ export default {
           this.$vux.loading.hide();
           util.errorCallBack(data, this.$router);
         });
+      // 更新包装规格
+      updateSkuPackageCode({
+        skuCode: para.skuCode,
+        newPackageCode: this.currentPackageCode,
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((data) => {
+          util.errorCallBack(data, this.$router);
+        });
     },
     pickUpSumbmit() {
       if (
@@ -977,6 +1048,17 @@ export default {
         })
         .catch((data) => {
           this.$vux.loading.hide();
+          util.errorCallBack(data, this.$router);
+        });
+      // 更新包装规格
+      updateSkuPackageCode({
+        skuCode: para.skuCode,
+        newPackageCode: this.currentPackageCode,
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((data) => {
           util.errorCallBack(data, this.$router);
         });
     },
@@ -1026,6 +1108,7 @@ export default {
       this.getDetailAllocs();
       this.getTotalPackageNum();
       this.getDetails();
+      this.getUnpackedDetailAllocs(true);
     }
     console.log(
       "URL： " + encodeURIComponent(window.location.href.split("#")[0])
@@ -1083,53 +1166,54 @@ export default {
 }
 
 .FONT {
-  font-size: 18px;
+  font-size: 16px !important;
   line-height: 28px;
 }
 
 .FONT-COMPLETE {
-  font-size: 18px;
+  font-size: 16px !important;
   line-height: 28px;
   background-color: #3cc51f;
   color: #fff;
 }
 
 .FONT-OVERCOMPLETE {
-  font-size: 18px;
+  font-size: 16px !important;
   line-height: 28px;
   background-color: #ffbe00;
   color: #fff;
 }
 
 .FONT-COMPLETE :active {
-  font-size: 18px;
+  font-size: 16px;
   background-color: #ce272d;
   color: #fff;
 }
 
 .FONT-OVERCOMPLETE :active {
-  font-size: 18px;
+  font-size: 16px;
   background-color: #ce272d;
   color: #fff;
 }
 
 .FONT-SELECTED {
-  font-size: 18px;
+  font-size: 16px;
   background-color: #003057;
   color: #fff;
 }
 
 .FONT-SINGLEPACKNO {
-  font-size: 18px;
+  font-size: 16px !important;
   background-color: #003057;
   color: #fff;
 }
 
 .FONT-DOUBLEPACKNO {
-  font-size: 18px;
+  font-size: 16px !important;
   background-color: #ffbe00;
   color: #fff;
 }
+
 .currentPackageNo {
   text-align: center;
 }

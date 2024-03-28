@@ -15,5 +15,10 @@ export const requestAccessToken = params => {
   }}).then(res => res.data)
 }
 
-export const wxLogin = params => { return axios.get(`/xibin/wx/getAccessTokenForLogin`, { params: params }); };
+export const wxLogin = params => {
+  return axios.post(`/xibin/wx/getAccessTokenForLogin`, qs.stringify(params), {headers: {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }}).then(res => res.data)
+}
+// export const wxLogin = params => { return axios.post(`/xibin/wx/getAccessTokenForLogin`, params ); };
 

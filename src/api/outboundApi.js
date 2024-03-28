@@ -43,4 +43,6 @@ export const removeOutboundDetail = params => { return axios.post(`/xibin/outbou
 
 export const mobileScanSaveOutboundDetail = params => { return axios.get(`/xibin/outbound/mobileScanSaveOutboundDetail`, { params: params }); }
 
+export const updateSkuPackageCode = params => { return axios.get(`/xibin/fittingSku/updateSkuPackageCode`, { params: params }); };
+
 

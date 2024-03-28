@@ -309,7 +309,7 @@ export default {
         .then((res) => {
           this.$vux.loading.hide();
           _this.editShow = false;
-          _this.$vux.toast.text(res.data.msg);
+          _this.$vux.toast.text(res.data.msg, "buttom");
           _this.getDetails(flag);
         })
         .catch((data) => {

@@ -149,7 +149,7 @@
   ],
   "BD_CUSTOMER_PAYMENT_CATEGORY":[
     {"code":"CASH","name":"现金"},
-    {"code":"ON_DElLIVERY","name":"货到付款"},
+    {"code":"ON_DELIVERY","name":"货到付款"},
     {"code":"PERIOD","name":"账期"}
   ]
 }
